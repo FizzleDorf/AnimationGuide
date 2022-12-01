@@ -1,0 +1,192 @@
+#FizzleDorf's Animation Guide
+
+!!! Please be aware of your GPU/CPU limitations. You may need to have lower resolution frames and less fps depending on your hardware. I have tested a RTX 2080 ti and a RTX 4090 and they are good to go for the settings I will be using in this guide. If you are new, don't jump into this yet. Get your feet wet prompting images first and you will have a much easier time understanding what's going on.
+
+##Index
+
+[TOC2]
+
+##Introduction
+Greetings anons! This guide is for AI artists who want to emulate traditional drawn animation such as anime, cartoons, stop-motion or rotoscope. While I primarily use Prompt interpolation in my animations, I will also cover other methods and scripts in time. There are many ways of approaching animation and I want it to be easy for anyone to get into!
+
+This is a living document, I plan on exploring other animation techniques and refining current methods. I hope you anons are willing to glean some info on different processes so everyone can put out cool animations.
+
+!!! note Thank you all for being so supportive and I hope those that are eager to make animations have the time of their lives! I really hope this guide helps spur your imagination. Show us your dreams!
+
+##Frame-rate
+Traditional styles of animation use lower frame-rates. Depending on what kind of animation you want to do, you should have one or multiple selections of fps in mind for different scenes. Below is a chart with the appropriate fps for animation styles:
+
+Style | fps | fps in post
+ -: | :-:| :-: 
+Anime (Budget) | 8fps | 16fps
+Anime | 12fps | 24fps
+Cartoons |12-15fps | 24-30fps
+Stop-Motion| 4-25fps | 8-30fps 
+Rotoscope (kind of all over the place, use whatever fits)| 8-30fps | 30-60fps
+
+!!! Not sure if adding 4's instead of 2's is able to be easily done but certainly possible if you are organized. but I wouldn't recommend it.
+
+##Width and Height
+
+>These sizes are good for most mid-tier machines. Do what's efficient and has decent quality so generating doesn't take forever on larger projects. You can always upscale after.
+
+**Portrait** aspect ratios take much longer to process. My 4090 hangs a lot without much happening in the background at ==768x448== but it can still make it through (I did run out of VRAM once and crashed but it was my own fault. **Be careful anons!**. **If you decide to go with this aspect ratio, start small and work your way up to your VRAM capability.**
+
+**Landscape** aspect ratios work much better for processing. Most of my videos are at ==448x768== and uses ~8GB VRAM and takes ~3 seconds average to process a frame. You might well off sticking to this aspect ratio as well.
+
+**1:1** aspect ratio is probably the easiest out of the box. Sticking with ==512x512== is pretty safe imho. Keep in mind the cropping that can occur so take measures against that.
+
+-> Below is a table of aspect ratios for the height and width options in the Stable Diffusion Webui: <-
+
+-> ![Aspect ratio](https://i.imgur.com/HO6Koys.png) <-
+
+This is a calculator for quick reference as well: https://preyx.github.io/sd-scale-calc/
+
+If you are new to up-scaling, a helpful anon put this together for you: 
+
+https://pastebin.com/8WVyDxt9
+
+This also contains useful info for cleaning frames too. Thank you anon!
+
+More in depth information here:
+
+https://rentry.org/sdupscale
+
+
+##Prompt-Interpolation
+
+A guide on using prompt interpolation to generate traditional style animations in Automatic1111's Stable Diffusion Webui.
+
+https://rentry.org/AnimAnon-PromptInterp
+
+example:
+->![Imgur](https://i.imgur.com/crYtcud.gif)<-
+
+##Frame-by-frame Animation (*haven't attempted yet*)
+
+Extremely effective for coherency from examples I've seen but seems really time consuming. The Krita and Photoshop plugins would alleviate a lot of the pain from inpainting in the webui and frame interpolation will cut down on the number of frames you actually need.
+
+So far we have these instructions:
+
+>Start with a single vector image.
+>use any variety of prompts you wish (keep variance per output very low (50-75%).
+>Using img2img, slowly evolve the type of details you are trying to work on (face, arms, clothing, etc.)
+>Do this by generating an image based on your current "frame" until you satisfy output to build upon.
+>You then use that output as your next frame and build from there, gradually adding and removing prompts. 
+>Repeat X times then make a movie.
+*~Anon*
+
+Example from the same anon:
+[Frame-by-frame example](https://i.imgur.com/hS7Gw3n.mp4)
+
+!!!note I will be continuing this section at a later date 
+
+-----
+
+##Seed Travel
+
+Link: https://github.com/yownas/seed_travel
+
+Some anons had some luck getting coherent animations but requires a lot of "seed fishing". My experimentation only really gave me one result I kind of liked but that doesn't bring this script off the table. If you have two clips you really want to use with each other and they don't share the same seed (*and every other setting is the same* ), you can seed travel to the desired seed then fill the frames between clips. Other scripts include seed travel in their repertoire.
+
+-----
+##Rotoscoping
+
+A guide to applying Automatic1111's Stable Diffusion Webui to videos.
+
+https://rentry.org/AnimAnon-Rotoscope
+
+-----
+
+##ChaiNNer
+
+link: https://github.com/chaiNNer-org/chaiNNer
+
+Really cool and free video editing software and can overlay/animate vector art over the video. You can make your own vector art in the webui using this script: https://github.com/GeorgLegato/Txt2Vectorgraphics and animate scale and position. Some creative anons might be able to make something stylish with this!
+
+-----
+
+
+##Deforum
+
+Link: https://github.com/deforum-art/deforum-for-automatic1111-webui
+
+The most widely used animation script by far. People ask me all the time if I am using it for my animations but I think starting out it's better to learn with simple scripts and apply that knowledge to Deforum. Very good with Img2Img animations. This can also be really useful for pulling off 3D to 2D anime and rotoscoping in general. 
+
+!!! note Deforum txt2img interpolation is being implemented into the Webui! I will be going over this script in the near future.
+
+Example:
+
+->![Deforum Test](https://i.imgur.com/ewduMEz.gif)<-
+
+I am dabbling in Deforum at the moment but came across some useful links for those who want to dive in. In the future, I want to discuss techniques for different effects as well as trying out and sharing masks that get good results. This will take time though, there are many parameters to play around with.
+
+Main GitHub site: 
+https://deforum.github.io/
+>I found most of my references here but will post the links below for Automatic1111's Stable Diffusion Webui users.
+
+Starter Guide to the controls and parameters in Deforum:
+https://docs.google.com/document/d/1pEobUknMFMkn8F5TMsv8qRzamXX_75BShMMXV8IFslI/edit
+
+Keyframe editor for manually creating curves for keyframe parameters:
+https://www.chigozie.co.uk/keyframe-string-generator/
+>Also has a separate site to get curves from audio files.
+
+Math reference for repeating animation curves:
+https://docs.google.com/document/d/1pfW1PwbDIuW0cv-dnuyYj1UzPqe23BlSLTJsqazffXM/edit
+And a graphing calculator to check the keyframes:
+https://www.desmos.com/calculator
+
+An overview of camera controls in 2d and 3d mode:
+https://deforum.github.io/animation.html
+
+-----
+
+##Parseq
+
+Link: https://github.com/rewbs/sd-parseq
+
+Great script for music visualizations but can only do vid2vid or img2img. What I like about this script is the GUI timeline to track multiple interpolations even with sinusoidal functions! Love that it's a separate gradio page so you aren't scrolling up and down all the time. 
+
+!!! note Parseq txt2img interpolation is being implemented into the Webui! I will be going over this script in the near future.
+
+
+!!! I will be continuing this section at a later date
+
+-----
+
+##Flowframes
+
+Link: https://nmkd.itch.io/flowframes
+
+Frame interpolation to save time processing extra frames to reach your target fps. Mixed results but I haven't tried every model. There is a plugin somewhere to plot the interpolation on a timeline which would greatly improve results on traditional animation. Still looking....
+
+-----
+
+
+##Moving Forward
+
+A section on FFmpeg would probably be a good idea. Looking at how some of the scripts set their batches to encode data, it's kind of all over the place.  I would also like to go into the Shift Attenuation script and see how it differs from prompt interpolation and identify use cases for it. 
+
+
+##Unsorted Links List
+
+
+**Untested but interesting:**
+
+https://github.com/DiceOwl/StableDiffusionStuff
+
+https://github.com/amotile/stable-diffusion-backend/tree/master/src/process/implementations/automatic1111_scripts
+
+https://github.com/amotile/stable-diffusion-studio
+
+https://github.com/Kahsolt/stable-diffusion-webui-prompt-travel
+
+https://github.com/thygate/stable-diffusion-webui-depthmap-script
+
+https://www.framesync.xyz/
+
+##Contact:
+Discord: Fizzledorf#9223
+Twitter: https://twitter.com/FizzleDorf
+Youtube: https://www.youtube.com/channel/UCdkuTpXmJvHzbxnuszEiOKg

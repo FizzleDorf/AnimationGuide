@@ -1,0 +1,140 @@
+#FizzleDorf's Animation Guide -Rotoscope Animation
+
+return to main page:
+https://rentry.org/AnimAnon
+
+[TOC]
+
+----
+
+##What is Rotoscoping?
+
+*"Rotoscoping is an animation technique that animators use to trace over motion picture footage, frame by frame, to produce realistic action. Originally, animators projected photographed live-action movie images onto a glass panel and traced over the image. This projection equipment is referred to as a rotoscope, developed by Polish-American animator Max Fleischer, and the result is a rotograph. This device was eventually replaced by computers, but the process is still called rotoscoping."
+*from the wikipedia article on rotoscoping found here: https://en.wikipedia.org/wiki/Rotoscoping *
+
+Using generative AI to create these animations still falls under this category of animation. There is a similar workflow process but generative AI has some quirks that can help or hinder the animation process. If you want more coherent results for example, you would have to use low de-noise values to adhere to the original image but would lose a lot of the desired prompts effects on the subject. There are some exceptions but it requires more time and effort to achieve the best results.
+
+Example of rotoscoping use prior to current generative AI:
+https://youtu.be/hkjDUERgCQw
+*Trailer for the film A Scanner Darkly (2006)*
+
+----
+
+##Batch Img2Img
+
+!!! This also works on Animations as well!
+
+The easiest method to rotoscope and possibly animate using the SD-Webui. No scripts needed really but there are some that take a step or two out of preparation. 
+
+First, Find the video you wish to rotoscope. If the video is long you should consider splitting it up into clips and render out each clip separately. Make sure the video is cropped or scaled to the resolutions (height/width) available in Automatic1111's Web-UI.
+
+Open a terminal into a separate project directory or include the following in a batch file:
+
+```
+mkdir frames
+
+ffmpeg -i somevid.mp4 -r 12/1 frames/output%05d.png
+```
+
+This will make a new directory called "frames" and fill it with a PNG sequence of your video at the specified frames (in this case 12). The Output files will be names output and have an identifier 5 digits long.
+
+!!! Video editing software usually comes with PNG sequence extraction and if you are more comfortable using that go right ahead!
+
+In Automatic1111's Web-UI, head on over to Img2Img and input a frame from the PNG sequence. Work out your prompts and settings until you are satisfied with the result. 
+
+!!!note Keep in mind your denoise value will affect how close to the original video the entire sequence will play out. 
+
+When you are ready, create a new directory for the output frames called "generatedframes" (or whatever you want). Select the Batch Img2Img tab and provide the input/output fields with the appropriate directories and generate the frames.
+
+With the generated sequence, you can batch upscale then continue or just stitch them together as is.
+
+Using FFMpeg:
+
+```
+ffmpeg -r 12/1 -f image2 -i generatedframes/output%05d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p test.mp4
+```
+
+you can change the file type to whatever video format.
+
+!!! Video editing software can also do this as well. You can also rearrange frames around if you want to have holds on a pose!
+
+Feel free to interpolate the frames to a faster frame-rate. I do find you can hide a lot of misplaced features by having a slower frame-rate and as you get faster things get a little warped or odd looking without extensive frame cleanup.
+
+Example
+*batch Img2Img test with footage from RAN by Akira Kurosawa*
+https://youtu.be/s03i7dPDGK8
+
+----
+
+##Ebsynth
+
+https://ebsynth.com/
+
+Probably the closest to a traditional rotoscope workflow. The idea here is to key your stylized frame to the end points of every movement transition as well as keying out masks so EBsynth knows what to stylize. You can key stylized frames for every frame in the video but it's very time consuming to do all of them. You must have a mask for every frame though (I normally use aftereffects to make a mask here). I tried an experiment with this already but I need more practice keying the stylized frames, playing with de-noise values, EBsynth settings, etc. My results so far are either too blurry or too incoherent. This does yield very good results though and is a big contender for large scale productions.
+
+ EBsynth uses the Few-Shot-Patch-Based-Training project as it's main interpolation method. 
+
+You can find more about the project here: https://github.com/OndrejTexler/Few-Shot-Patch-Based-Training
+
+example from twitter:
+https://twitter.com/Mega_Gorilla_/status/1590684647582617600
+*notice this is with low denoise settings so it isn't very chaotic at all*
+
+!!!note Once I feel out some good settings I'll delve further into this and hopefully give you Good results as well!
+
+----
+
+##Using 3D Models for Rotoscope
+
+3D Models really help with keeping coherence with an anime or cartoon character. In this section I'll set you up with some basic anime motion capture and character editing tools to try any of the above methods for yourself. Using your own models and rigging would require 3D animation software (Blender is a good start) to animate your character.
+
+!!! There are posing scripts for VSeeFace and Unity that also a great for posing regular Img2Img stills!
+
+The software we will be using:
+
+OBS
+https://obsproject.com/
+
+Anime character editor 
+https://vroid.com/en/studio 
+*The beta version of this has more clothes so you might need to download both. There is also a script to convert to fbx in unity so you can load it into Blender if you want to customize things a little more*
+
+Full body motion capture from video or live camera
+https://github.com/digital-standard/ThreeDPoseTracker
+
+Facial tracking including expression animations
+https://www.vseeface.icu/
+
+Obs plugin to alpha out the VseeFace background.
+https://www.vseeface.icu/spout
+
+The idea here is to film the 3D character with a green screen background set up in OBS (Stable Diffusion does a really good job at keeping the green screen intact through the img2img generation process without having to inpaint!). Record your animation in OBS. Follow the steps in the img2img instuctions on this page. Chroma-key the resulting images with your preferred software. The resulting frames can be put into git or webm with alpha channels active. You can then layer the character animation on other works or videos easily!
+
+There are plenty of guides going into detail on creating characters, setting up the applications and customizing the model using Blender/Unity. 
+
+By far the best ones are done by this Finnish Catgirl:
+https://www.youtube.com/c/Suvidriel
+...yeah, I'm serious. See for yourself.
+
+example:
+*Some tests of mine. I will probably replace these with better examples as I find better implementations:*
+
+[MikuTest](https://i.imgur.com/WGv6TO9.mp4) -Webcam tracking for face and hands.
+
+https://youtu.be/g084DzeK6LM  -Full body motion capture with video input. (Far away faces are still an issue, keep that in mind for your own videos)
+
+Other than the setup, the process for passing the video through SD is the same as the Batch Img2Img process.
+
+----
+
+##Notes
+-Batching Img2Img has strange behavior during fast movements. Subtle movements hold up much better with keeping a coherent subject.
+
+-MMD Looks really interesting for having multiple characters in the same scene easily but does require cleanup after recording the animation data and sending it to unity. I'll give it a spin in the future. 
+
+-Parseq and Deforum are also great choices for rotoscoping but have many other features that I want to touch on separately. I will get to this in time.
+
+----
+
+return to main page:
+https://rentry.org/AnimAnon
