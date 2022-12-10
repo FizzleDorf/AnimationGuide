@@ -1,0 +1,463 @@
+#FizzleDorf's Animation Guide - Deforum
+
+return to main page:
+https://rentry.org/AnimAnon
+
+##Deforum
+
+
+[TOC2]
+
+
+!!!note Download the extension from GitHub: https://github.com/deforum-art/deforum-for-automatic1111-webui
+
+##Introduction
+This Page is an overview of the features and settings in the Deforum extension for the Automatic1111 Webui. If you are using the notebook in Google Colab, use this guide for the overview of controls: https://docs.google.com/document/d/1pEobUknMFMkn8F5TMsv8qRzamXX_75BShMMXV8IFslI/edit (This is also a good alternate reference for A1111 users as well).
+
+->![Deforum Tabs](https://imgur.com/geBzD2Q.jpeg)<-
+
+The Extension has a separate tab in the Webui after you install and restart. In it, there is another set of tabs for each section of Deforum. I'll be giving a breakdown of the controls, parameters and uses.
+
+!!!note I plan on adding techniques, more workflows and resources like masks and settings files.
+
+###Run
+
+->![Imgur](https://imgur.com/5GD9pzU.jpeg)<-
+
+Contains most of the settings you should be familiar with in txt2img and img2img with some additions:
+
+-**Import Settings from file**: Use custom settings already determined by a previous existing project. Stored in a text file. To use the feature, select Override and path to your settings file. I highly suggest you save these settings often just in case you crash or lose power while you are working. The save/Load settings are located in the bottom right and can be accessed without having to go back to the "Run" tab.
+
+-**Sample Settings**:
+Sample settings are the same as in txt2img and img2img. The notable difference in the Deforum extension is the CFG Scale and Denoise values are located in the Keyframe tab as they can be set on keyframes. See the Keyframes section for syntax and Generative Settings under the Animation Mode Settings for more details.
+
+-**Batch Settings**
+->![Imgur](https://imgur.com/68Jgrzf.jpeg)<-
+
+**Batch Name**:
+
+Name of the folder output images will be stored. The directory will be made in the img2img output folder or in the directory you specified in the settings.
+
+**Seed Behavior**
+How the seed behaves over time. There are four different Settings in the Auto1111 extension:
+
+- Iter: Incremental changes to the seed over time. Adds +1 to the seed every frame.
+
+- Fixed: The seed is the same for the whole animation sequence.
+
+!!! 3D and 2D modes overbloom when set to fixed. Iter or a schedule that changes over time do much better. 
+
+- Random: The seed randomly changes every frame.
+	
+- Schedule: Changes seeds depending on what was keyframed in the Seed Schedule parameter. *see the parameter details for more info*
+
+###Keyframes
+
+Mostly contains parameters that can be keyframed in the animation sequence. The parameters are explained later in this guide. What is important to understand is the syntax for keyframing the parameters:
+
+```C++
+
+/*Abstracted Example
+from frame 0 to frame 12, interpolate x to y.*/
+0:(x), 12:(y)
+/*"0: and 12: = keyframes to activate value
+"(x)" and "(y)" = parameter values (pixels, CFG scale, Denoise strength, etc)
+*/
+
+//must have "()" around parameter value. Values can be math functions. See below example: 
+0:(1.02+0.02*sin(2*3.14*t/20)), 12:0:(0.5+0.02*sin(2*3.14*t/20))
+//from the default zoom function to an altered function on frame 12.
+
+//The parameter values will interpolate between each other. If you want a value to be constant until a specific keyframe:
+0:(x), 6:(x), 12: (y)
+//from frame 0 to 6, maintain the same value. From frame 6 to 12, interpolate the values.
+```
+*See Animation Settings for more details on individual parameters*
+
+!!! Keyframing Prompts uses a different syntax. You can see the prompt example later in the guide for comparison. Know the difference and it could save you a headache!
+
+####Animation Settings
+
+->![Imgur](https://imgur.com/kuKk8rR.jpeg)<-
+
+Contains the animation mode selection, max frames for the animation sequence, and the border behavior.
+
+**Animation Mode:**
+A drop-down containing the four animation modes: 2D, 3D, and Video Input, Interpolation. More details in the **Animation Modes** section.
+
+**Max Frames:**
+The number of frames for your animation sequence. Should always be manually set before you start generating frames.
+
+**Border:**
+A dropdown selection of border behaviors for outpainting. There are 2 different behaviours: **Wrap** and **Replicate**.
+
+- Wrap: Uses the pixels from the opposite edge 
+
+- Replicate: Repeats the edge of the pixels, and extends them. 
+
+- Animations with fast canvas transformations may show repeating or stretched lines (See zoom examples).
+
+####Motion Parameters (*Details in Animation Mode*)
+
+Contains parameters to move the canvas in 2D and 3D animation modes. *More detains in the Animation Mode Section*
+
+###Prompts
+
+->![Imgur](https://imgur.com/X5cLcGo.jpeg)<-
+
+This is where prompts are keyframed in the animation sequence. The syntax is as follows:
+
+```C++
+
+//Abstracted Example
+{
+    "0": "Prompt A --neg NegPompt"
+    "12": "Prompt B" 
+}/*where "0": and "12": = keyframes where prompt is resolved in interpolation.
+Prompt A and B are positive prompts and NegPrompt is a negative prompt.
+Positive prompts are written first
+The negative prompt is read after --neg
+The quotations must be surrounding the keyframe num and another set around the full prompt with the negative.*/
+
+//Default example, notice the function syntax ' ' inside ( ) of the first prompt
+{
+    "0": "(scenic countryside:1.0), (cherry:`where(cos(6.28*t/10)>0, 1.8*cos(6.28*t/10), 0.001)`), (strawberry:`where(cos(6.28*t/10)<0, -1.8*cos(6.28*t/10), 0.001)`), snow, detailed painting by greg rutkowski --neg (cherry:`where(cos(6.28*t/10)<0, -1.8*cos(6.28*t/10), 0.001)`), (strawberry:`where(cos(6.28*t/10)>0, 1.8*cos(6.28*t/10), 0.001)`)",
+    "60": "a beautiful (((banana))), trending on Artstation",
+    "80": "a beautiful coconut --neg photo, realistic",
+    "100": "a beautiful durian, trending on Artstation"
+//This is keyframed as a 100 frame animation but depending on the settings can be longer.
+}
+//Be sure to have {} outside the keyframes 
+```
+
+###Init
+
+####Init Settings
+
+Settings for initializing the animation from an image as well as mask settings. Pretty straight forward for setting up as it is very similar to img2img settings. The input image and mask can be set from a URL as seen in the default values. 
+
+**Use_init**
+Toggle this on if you plan on using a starting image for the animation.
+
+!!! The img2img toggle is currently disabled in the Webui.
+
+**strength_0_no_init**
+
+A toggle that sets the initial denoise strength to 0 if there isn't a reference image.
+
+**strength**
+
+The initial denoise on the input image.
+
+**init_image**
+
+Path to the input image. This can also be a URL as seen by the example!
+
+**Video Input**
+
+Path to the input video. This can also be a URL as seen by the example!
+
+**use_mask**
+
+Toggle this on if you wish to use a mask. Applies to every frame.
+
+**use_alpha_as_mask**
+
+Cool feature to use alpha channels of PNG images for convenience.
+
+**invert_mask**
+
+Toggle this on if you want to invert the mask. Pretty straight forward.
+
+**mask_contrast_adjust**
+
+Adjusts the brightness of the mask with 1 being no adjustment.
+
+**mask_brightness_adjust**
+
+Adjusts the brightness of the mask with 1 being no adjustment.
+
+!!! The rest of the mask settings behave just like img2img.
+
+
+
+####Video Input
+
+**video_init_path**
+Path to the video you want to diffuse. *Can't use a URL like init_image*
+
+**overwrite_extracted_frames**
+Re-Extracts the input video frames every run. Make sure this is off if you already have the extracted frames to begin diffusion immediately.
+
+**use_mask_video**
+Toggle to use a video mask. You will probably need to generate your own mask. You could run a video through batch img2img and extract the masks every frame from Detection Detailer or use the Depth Mask script.
+
+**extract_nth_frame**
+Skips frames in the input video to provide an image to diffuse upon. For example: A value of 1 will Diffuse every frame. 2 will skip every other frame.
+
+###Video Output
+
+**image_path** 
+Path to the directory that holds the video frames. (.png)
+The output settings for frames and videos (.gif or .mp4 only)
+
+##Animation Modes:
+
+A drop-down of the available animation modes. There are four different types to choose from: Interpolation, 2D, 3D, and Video Input. Below is a brief description, examples and settings of each mode. 
+
+Before Moving on, It's important to understand how the x,y,z axis are used in film. the X-axis is horizontal, Y-axis is vertical, and the Z-axis is depth (distance from the camera to the canvas).
+
+->![XYZ](https://imgur.com/s8zBnqr.jpeg)<-
+
+###Generation settings:
+
+!!!note These settings are used in all the animation modes
+
+Sample settings that can be keyframed are in this section. This includes: noise, denoise strength, contrast, and CFG scale.
+
+->![Generation settings](https://imgur.com/UEFMeqF.jpeg)<-
+
+
+**Noise Schedule**
+The amount of graininess that is added to the image for more diffusion diversity. 
+
+
+**Strength Schedule**
+Denoise strength of the img2img process. Low values adhere more closely to the input image while higher values are more "creative".
+
+
+**Contrast Schedule**
+adjusts the overall contrast per frame (default neutral at 1.0)
+
+Example:
+"contrast_schedule": "0: (1.0), 6: (0.5),12: (2)"
+->![Contrast Schedule](https://imgur.com/pxGB9OK.gif)<-
+
+
+**CFG Scale Schedule**
+Leave one value at frame 0 for a constant scale, can be keyframed.
+
+Example:
+"cfg_scale_schedule": "0: (1), 12: (12)",
+->![CFG Scale](https://imgur.com/XBUQHu4.gif)<-
+
+
+###Interpolation Mode
+
+This mode is purely for prompt interpolation using the AND operator. A more in depth explanation and techniques can be found here: 
+https://rentry.org/AnimAnon-PromptInterp
+
+In this section I will be going over carrying over techniques from my guide on prompt interpolation. I recommend reading through that first before continuing through this section to get the most out of it. 
+
+####Setup
+
+In order for things to work properly a few settings need to be changed (Assuming you are starting with default Deforum settings):
+
+- The seed_behavior (under the "Run" tab) needs to be set to "fixed" (You can also use schedule to add seed interpolations, just make sure it isn't changing all the time)
+
+- The animation_mode under the "Keyframes" tab needs to be set to "Interpolation".
+
+- Color correction is disabled by default in this mode.
+
+!!! The base interpolation in this mode is not working properly but I have found a fix that helps smooth out the interpolations and provide the necessary frames for chaining and looping. It's not perfect but it gets decent results.
+
+```
+"prompts": {
+        "0": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0): `1-(t-0)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-0)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "10": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `1-(t-10)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.1): `(t-10)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "20": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.2): `1-(t-20)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `(t-20)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "30": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `1-(t-30)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-30)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "40": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2):`1-(t-40)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0):`(t-40)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor"
+    }
+```
+->**Raw result:**<-
+->![Raw example](https://imgur.com/tsXrcui.gif)<-
+
+->**After deleted frames:**<-
+->[Loop Example](https://imgur.com/jVdgO2a.mp4)<-
+
+!!! unless interpolation mode gets fixed or I find a way to have the negative prompt stay constant the key poses will look different enough to not fit in the sequence. Looping requires quite a few frames to get deleted.
+
+####Storyboard
+
+Instead of using an X/Y grid, you can use the animation prompts to storyboard your sequence. I would recommend using the webui images browser extension for quick access to the storyboard sequence to check your key poses or transitions. You can find the extension here if you don't already have it: https://github.com/yfszzx/stable-diffusion-webui-images-browser
+
+To do this, set up your prompts so they are 1 frame apart from each other. Also set the # of frames in the animation to the total number of prompts you have.
+
+```C++
+	{
+        "0": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0",
+        "1": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2)",
+        "2": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.2)",
+        "3": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8)",
+        "4": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2)"
+    }
+```
+
+Using the image browser, review the storyboard to see if any prompts need changing without having to generate the whole sequence. The Keyed frames will be replicated when you change the keyframe values.
+
+!!! if you are using a seed schedule, make sure you set your seeds to the corresponding keyframes in the prompt.
+
+
+###2D and 3D:
+
+Shared parameters in 2D and 3D animation modes.
+
+####Motion Parameters
+
+->![2D and 3D](https://imgur.com/bqKWgHT.jpeg)<-
+
+**Angle**
+2D operator for rotating the canvas along the z axis. Positive values rotate the canvas clockwise. Negative values rotate it counter-clockwise (*see example below*)
+
+Example:
+2DMode
+Border: wrap
+"angle": "0:(10)"
+->![angle](https://imgur.com/dazovjY.gif)<-
+
+
+**Zoom**
+2D operator for scaling the canvas for a zoom in or out effect. Use positive values to zoom in, decimal values to zoom out. Negatives do not work.
+
+Example 1:
+2D mode
+Border: Replicate
+zoom: 0:(0.985)
+->![Imgur](https://imgur.com/peQJO6R.gif)<-
+
+Example 2:
+2D mode
+Border: Wrap
+"zoom": "0:(0.985)"
+->![Imgur](https://imgur.com/3xDkTWv.gif)<-
+
+->*notice the lines being generated while zooming out in wrap mode*<-
+
+
+**Translation X**
+A Panning effect that translates the canvas along the x-axis.
+
+Example:
+2D Mode
+Border: wrap
+"translation_x": "0:(-10),11:(-10),12:(15)",
+->![Translation X](https://imgur.com/mBrAsQv.gif)<-
+
+
+**Translation Y**
+A Panning effect that translates the canvas along the y-axis.
+
+example:
+"translation_y": "0:(-5),6:(-2),12:(5)"
+->![Imgur](https://imgur.com/W9RiVsf.gif)<-
+
+
+###2D:
+
+####Motion Parameters
+
+2D canvas transformations. These parameters only work in 2D mode and are meant to simulate 3D canvas rotations and movements. This is mainly for low vram machines that can't generate 3D animations efficiently.  
+
+**Prespective flip — Low VRAM pseudo-3D mode**
+
+->![Prespective flip](https://imgur.com/IhPsXZZ.jpeg)<-
+
+!!! I will return to this section in a while. Apologies to the low vram users.
+
+
+###3D:
+
+3D canvas transformations. These parameters only work in 3D mode.
+
+####Motion Parameters
+
+->![Motion Param](https://imgur.com/YhNSU2S.jpeg)<-
+
+
+**Translation Z**
+3D operator to move canvas towards/away from view (speed set by FOV)
+
+example:
+"translation_z": "0:(5), 12:(-6)"
+->![Imgur](https://imgur.com/9aXU3n5.gif)<-
+
+
+**Rotation 3D X**
+3D operator to tilt canvas up/down in degrees per frame
+
+Example:
+"rotation_3d_x": "0:(0.5)"
+->![rotation 3d x](https://imgur.com/TcNX6wI.gif)<-
+
+
+**Rotation 3D Y**
+3D operator to pan canvas left/right in degrees per frame
+
+Example:
+"rotation_3d_y": "0:(0.5)"
+->![Imgur](https://imgur.com/sHAL3m4.gif)<-
+
+
+**Rotation 3D Z**
+3D operator to roll canvas clockwise/anticlockwise
+
+Example:
+"rotation_3d_z": "0:(0.5)"
+->![Rotation 3D Z](https://imgur.com/0ZlL8AQ.gif)<-
+
+####3D Fov settings
+
+**fov_schedule**
+The scale of depth between -180 to 180 when using the Translation_Z control. Values closer to 180 will make the image have less depth and vice versa with -180.
+
+**near_schedule**
+FOV of the camera plane.
+
+**far_schedule**
+FOV of the Canvas plane.
+
+
+##Seed Schedule and Color Coherence
+
+->![Seed and Coherence](https://imgur.com/icEEfhl.jpeg)<-
+
+####Seed Schedule
+
+This setting only comes into effect when the **seed_behavior** setting in the **Run** section is set to **Schedule**. This parameter can keyframe seeds and interpolates between them over time.
+
+example:
+"seed_schedule": "0: (4294967293),12: (2096896498)"
+->![seed_schedule](https://imgur.com/oC9J7oz.gif)<-
+
+!!! Notice the bloom effect when the seed stays constant after frame 12.
+
+###Color Coherence
+
+Contains 3 different CC options: LAB, HSV, RGB as well as the option to turn it off.
+- LAB: Perceptual Lightness* A * B axis color balance (search “cielab”)
+- HSV: Hue Saturation & Value color balance.
+- RGB: Red Green & Blue color balance.
+
+###Handy Resources
+
+Main GitHub site:
+https://deforum.github.io/
+
+Supported functions in Deforum keyframe parameters:
+https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/user_guide.html#supported-functions
+
+Math Use Guide in Deforum:
+https://docs.google.com/document/d/1pfW1PwbDIuW0cv-dnuyYj1UzPqe23BlSLTJsqazffXM/edit
+
+Graphing Calculator:
+https://www.desmos.com/calculator
+
+Keyframe editor for manually creating curves for keyframe parameters:
+https://www.chigozie.co.uk/keyframe-string-generator/
+
+Quick reference for camera controls:
+https://deforum.github.io/animation.html
+
+return to main page:
+https://rentry.org/AnimAnon
