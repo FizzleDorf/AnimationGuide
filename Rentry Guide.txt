@@ -1,17 +1,17 @@
 #FizzleDorf's Animation Guide
 
-!!! Please be aware of your GPU/CPU limitations. You may need to have lower resolution frames and less fps depending on your hardware. I have tested a RTX 2080 ti and a RTX 4090 and they are good to go for the settings I will be using in this guide. I will try to collect info into a table from other anons for optimal settings but for now you should know your card's limit. If you are new, don't jump into this yet. Get your feet wet prompting images first and you will have a much easier time understanding what's going on.
+!!! If you are new, don't jump into this yet. Get your feet wet prompting images first and you will have a much easier time understanding what's going on.
 
-!!!note New additions: New page for Prompts interpolation (getting cluttered so I'll be breaking things up in subsections.) + Storyboarding using X/Y Plot.
+!!! note Update: Added in the first draft of the Parseq guide and added some info in the Deforum section. I'll have to get the 2D section sorted out.
 
-##Index
+#Index
 
 [TOC2]
 
 ##Introduction
-Greetings anons! This guide is for AI artists who want to emulate traditional drawn animation such as anime, cartoons, or stop-motion. While I primarily use Prompt interpolation in my animations, I will also cover other methods and scripts in time. There are many ways of approaching animation and I want it to be easy for anyone to get into!
+Greetings anons! This guide is for AI artists who want to emulate animation styles such as anime, cartoons, stop-motion or rotoscope. There are many ways of approaching animation and I want it to be easy for anyone to get into!
 
-This is a living document, I plan on exploring other animation techniques and refining current methods. I hope you anons are willing to glean some info on different processes so everyone can put out cool animations.
+This is a living document, I plan on exploring other animation techniques and refining current methods. I hope you anons are willing to glean some info on different processes so everyone can put out cool animations in their own unique styles.
 
 !!! note Thank you all for being so supportive and I hope those that are eager to make animations have the time of their lives! I really hope this guide helps spur your imagination. Show us your dreams!
 
@@ -19,394 +19,210 @@ This is a living document, I plan on exploring other animation techniques and re
 Traditional styles of animation use lower frame-rates. Depending on what kind of animation you want to do, you should have one or multiple selections of fps in mind for different scenes. Below is a chart with the appropriate fps for animation styles:
 
 Style | fps | fps in post
------- | ------| -------
+ -: | :-:| :-: 
 Anime (Budget) | 8fps | 16fps
 Anime | 12fps | 24fps
 Cartoons |12-15fps | 24-30fps
 Stop-Motion| 4-25fps | 8-30fps 
 Rotoscope (kind of all over the place, use whatever fits)| 8-30fps | 30-60fps
 
-!!! Not sure if adding 4's instead of 2's is able to be easily done but certainly possible if you are organized. but I wouldn't recommend it.
 
+
+You can consult the performance chart to calculate the amount of time it will take to generate an animation sequence.
+
+->![PerfChart](https://imgur.com/LYqcJ9U.jpg)<-
+->*shamelessly ripped but very much needed. TY Voldy Guide!*<-
+
+Framerate Calculator here if you need it:
+https://www.zapstudio.net/framecalc/
+
+##Width and Height
+
+-> Below is a table of aspect ratios for the height and width options in the Stable Diffusion Webui: <-
+
+-> ![Aspect ratio](https://i.imgur.com/HO6Koys.png) <-
+
+->This is a calculator for quick reference as well: https://preyx.github.io/sd-scale-calc/<-
+
+If you are new to up-scaling, a helpful anon put this together for you: 
+
+https://pastebin.com/8WVyDxt9
+
+This also contains useful info for cleaning frames too. Thank you anon!
+
+More in depth information here:
+
+https://rentry.org/sdupscale
+
+##FFMPEG
+
+!!!note Install ffmpeg: https://ffmpeg.org/download.html
+
+!!! Figured the below would be good to include here since I have other resources listed.
+
+>ffmpeg needs to be installed. If its not on your PATH, you may need to manually specify the executable location.
+>For VP9 webm, ffmpeg must be compiled with libvpx-vp9
+>For VP8 webm, ffmpeg must be compiled with libvpx
+>For H.265 mp4, ffmpeg must be compiled with libh265
+>For H.264 mp4, ffmpeg must be compiled with libh264
+~*from the Loopback Wave Script Anon's rentry*~
+
+As much as I would like to have a fleshed out section for ffmpeg, there are plenty of resources for learning commands. Below are links that provide a GUI for learning them.
+
+!!!note Thank you to the anon that put the below link together! Greatly appreciated!
+
+A simple, easy to use input for making webms:
+https://ffmpeg.party/webm-from-image-sequence/
+(*hasn't been tested on Linux*)
+
+A node based GUI used to make ffmpeg filters:
+https://ffmpeg.guide/
 
 
 ##Prompt-Interpolation
 
+A guide on using prompt interpolation to generate traditional style animations in Automatic1111's Stable Diffusion Webui.
 
-###Download 
+Guide: https://rentry.org/AnimAnon-PromptInterp
 
-Prompts-Interpolation Script:
-Script link: https://github.com/EugeoSynthesisThirtyTwo/prompt-interpolation-script-for-sd-webui
+example:
+->![Imgur](https://i.imgur.com/crYtcud.gif)<-
 
-Animator Script:
-https://github.com/Animator-Anon/Animator/blob/main/animation_v6.py
+##Frame-by-frame Animation (*haven't attempted yet*)
 
+Extremely effective for coherency from examples I've seen but seems really time consuming. The Krita and Photoshop plugins would alleviate a lot of the pain from inpainting in the webui and frame interpolation will cut down on the number of frames you actually need.
 
-!!! note Special thanks the author EugeoSynthesisThirtyTwo and Animator-Anon!
+So far we have these instructions:
 
-This is my go-to script for making my animations at the moment until existing scripts or new scripts can give equal or better results. 
+>Start with a single vector image.
+>use any variety of prompts you wish (keep variance per output very low (50-75%).
+>Using img2img, slowly evolve the type of details you are trying to work on (face, arms, clothing, etc.)
+>Do this by generating an image based on your current "frame" until you satisfy output to build upon.
+>You then use that output as your next frame and build from there, gradually adding and removing prompts. 
+>Repeat X times then make a movie.
+*~Anon*
 
------------
+Example from the same anon:
+[Frame-by-frame example](https://i.imgur.com/hS7Gw3n.mp4)
 
-###What is prompt-interpolation?
-
-The script uses the prompt function ==["prompt1":1.0 AND "prompt2":0.0]== in the first frame and ==["prompt1":0.0 AND "prompt2":1.0]== in the last frame with every frame in between having the attention shift from =="prompt1"== to =="prompt2"== with however many frames you input.
-
-Example:
-
-
-
-![5 Frames](https://i.imgur.com/8P1tIfB.png)
-
-
-
-**["prompt1":1.0 AND "prompt2":0.0]>>>>>>>>>["prompt1":0.5 AND "prompt2":0.5]>>>>>>>>>>["prompt1":0.0 AND "prompt2":1.0]**
-
-
-In the script, the line
-``` python
-interpolation = 0.5
-```
-controls the rate of interpolation. I haven't played around with this much but feel free to experiment.
-
-!!!note this can also be a useful way to pose your subject in still images before post-processing.
-###Prompting Animations
------------
-####Settings
-
-#####Model Selection
-As of now, I have only tested **NAI Full (925997e9)** and  **NAI (60%)+WD(40%) (0ac9de4e)** but I have seen good results from SD 1.4 when doing portraits and upper body shots. The reason I chose NAI as the base is because it has the most pose data of the available models at the moment. I need feedback from other Anons' mixes to pinpoint what mixes work or how much NAI can be taken away before the pose data becomes moot.
-
-!!!note For examples in this section I will be using **NAI Full (925997e9)**
-
-#####Sampling Selection
-Euler work great! I haven't messed around too much with any others though. Avoid using adaptive sampling methods but other than that use what works for you.
-
-Handy resources posted by an anon for sampler comparison (thank you anonymous for the links!):
-
-https://arxiv.org/pdf/2206.00364.pdf
-
-https://www.reddit.com/r/StableDiffusion/comments/xmwcrx/a_comparison_between_8_samplers_for_5_different/
-
->DDIM does not work unfortunately. Will eventually include a chart for what works.
-
-#####Width and Height
-
->These sizes are good for most mid-tier machines. Do what's efficient and has decent quality so generating doesn't take forever on long projects. You can always upscale after.
-
-**Portrait** aspect ratios take much longer to process. My 4090 hangs a lot without much happening in the background at ==448x768== but it can still make it through (I did run out of VRAM once and crashed but it was my own fault. **Be careful anons!** I would test again but I'd rather wait for a replacement power adapter). **If you decide to go with this aspect ratio, start small and work your way up to your VRAM capability.**
-
-**Landscape** aspect ratios work much better for processing. Most of my videos are at ==448x768== and uses ~8GB VRAM and takes ~3 seconds average to process a frame. You might well off sticking to this aspect ratio as well.
-
-**1:1** aspect ratio is probably the easiest out of the box. Sticking with ==512x512== is pretty safe imho. Keep in mind the cropping that can occure so take measures against that.
-
-!!!note will have to get more refined recommendations for all sorts of GPUs. Will maybe add a chart detailing optimal resolutions after I iron out how to gather the necessary analytics from everyone.
-
-#####Denoising Strength
-
-txt2img is a little picky when it comes to denoising. In order to interpolate properly it needs to be less than %50 but not stray too far from it in order to travel through the steps.
-
-Currently I'm sitting at **0.48** but other factors might come into play like models, samplers, and embeddings. Need to do more testing to see the effects. 
-
-img2img has a lot more freedom of choice, sticking to something under **0.50** is still recommended though. Better coherency at really low denoise values (0.01-0.05).
-
-#####Seed
-
-Keeping your seed intact through your animation chains is crucial for keeping a perfect flow into the next clip as well as returning to the first frame from a completely different prompt to loop the sequence.
-
-#####Other settings
-
-Doesn't have an effect on much other than stylistic changes. I would recommend keeping sampling steps under 40 for speed but you can do what you want. Once you choose your settings you are locked to them in order to retain constancy when a clip flows into another.
-
-#####Set your directories/outputs (save yourself a headache later)
-Txt2img: .gif and X/Y reels are exported to the txt2img and img2img grid folders respectively. The individual images are exported to txt2img and img2img folder as well. 
-
-You can change the directory to a new output folder direct in the Webui settings or jump into the script and change the output path yourself.
-
-Setting the output image name to frame_"identifier". With "identifier" being a unique name for your clip sequence. This will make things easier for frame editing down the line in larger projects.
-
-!!! This can be automated better and one of the reasons I want to get a script out.
-
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-####Txt2Img Animation Technique
-
-So far, I have stuck under 75 tokens to keep things as simple as possible for coherency. I found the token reset can add hard cuts partway through the animation. Prompting animation requires the most attention to the subject in order to keep coherency of the subject (unless you want a transform sequence)
-
-I normally order the first prompt like this:
-
-==subject > style and/or artist > Adjectives > Emotion/Pose > Background*>Background Descriptors==
-
-with the subject being your character (or characters). 
-
-!!! The background can sometimes overtake everything and needs either less attention using [ ]  or using a different word for the background you desire.
-
-Anything else like a particle effect or subtle pose I usually put in the end.
-
-After you assemble the prompt, copy it and paste it into the second prompt input. Change up the tokens that don't belong in the end frame and replace them with what you need to get the end pose. Below is some advice on what kind of prompts or prompt combinations to increase your pose accuracy.
-
-**This isn't the golden prompt order that works every time. Some reordering is sometimes needed. Feel free to experiment!**
-
-
-
-#####Prompting Pose
-Getting the interpolation right requires you to describe your subject's pose accurately but with as few tokens as possible so it can be pretty tricky. I like to think of it like animating a 3D model using animation controllers. Actions like running, crossed arms, Crossed legs, etc are like pose presets you can use 
-
-
-
-#####Prompting Emotions
-The lowest effort to get to work. You can either swap out the token you are using for another emotion in the second prompt or add emojis/adverbs to combo out the Expression. The hard part is lip-syncing (*getting the subject to mouth vowels through prompt should be possible, I will be experimenting with this*) but in-paint repairs, using some sort of 2D VtuberAI, or manual photo-editing to key the mouth in each frame.
-
-
-
-#####Prompting Camera Position
-Very powerful keywords for interpolation and showing perspective but can be volatile when trying to keep the subject consistent. I normally play with a few camera positions until I get something consistent. When choosing a camera keyword, think about where the camera is in the first frame and where you want it to be in the next.
-
-Some handy tips for getting camera movements:
-zoom-ins and outs: Choose a shot that is 1step closer or farther away (example: "Upper body" --> "Portrait" for a zoom-in).
-Panning: Use your subjects position in frame to control the camera panning.
-Camera modifiers like "from above" and "dutch angle" are really helpful for making variations of shots and can be used to repair inconsistency in the subject *sometimes*
-
-Experiment with this, there are combinations I haven't tried yet and would be really cool to see what kind of camera combinations people can come up with.
-
------------
-
-####Workflow
-
-#####Creating a Clip
-Creating a clip is easy but getting a good result might take a few tries. 
-
-
-
-**First Pass**
--Start by putting the # of images parameter to 2 images.
--Uncheck "make a .gif".
--Generate (you can batch at this step just make sure you use different seeds).
-
-Repeat the above unless you find two images that match the beginning and end pose you want.
-
-
-
-**Second Pass**
--set # of images between 5-10.
--*optional* you can turn on make a .gif for a short clip. I normally keep the time the image shows at 100ms at this stage but you can do whatever you want here.
--Generate. (batching isn't recommended here)
-
-Tweak the prompt as needed to get better results before generating the final result.
-
-
-
-**Final Pass**
--Select the amount of milliseconds an frame will be displayed for until the the next frame. *At the bottom of this section I included a table for conversions to fps*
--choose the amount of frames you want (also affects the video clips duration ==frames/time==).
--Generate
-
-More often than not the result will be good. if the result is bad either take a step back and refine the second pass with a few more frames added for better clarity or tweak the prompt slightly and try again. 
-
-!!!note Video clips over 3s might have awkward transitions that don't come up in the interpolation inspection. Either do a slight tweak and repeat the final pass or repeat the second pass stage if the result is too far gone, another solution is to break up the animation into smaller clips and chain them *see next section*
-
-FPS Table
- milliseconds | FPS
------|-----
-125ms| 8/s
-100ms|10/s
-83ms|12/s
-66-67ms| 15/s
-
-#####Chaining a Clip
-Simple to perform but oddities can arise when you don't get the same image from the same seed (This rarely happens but I have experienced it) or you are sent to the "alternate-prompt dimension" (forgetting to trim prompts and chaining results will nest interpolations inside each other giving very different results).
-
-There are two ways of doing this:
-
-######Starting from first frame
-*you can also string animations with the starting frame and work backwards*
--You can use the last frame of the clip in the PNGinfo tab, copying the prompt, and pasting it in the primary prompt. **make sure you trim the prompt of the interpolation, use the base prompt only**.
--Proceed with the steps outlined in creating a clip.
-
-######Filling Frames between clips
--You can have two separate clips joined together with the last frame of the first clip interpolate to the start of a second clip.
--Using PNG info, gather the prompts from the mentioned frames and place them in the appropriate inputs.
--Proceed with the steps outlined in creating a clip.
-
-#####Looping a Clip
--Same procedure as **Filling frames between clips**
--Using PNG info, gather the prompts from the first and last frame of your sequence and place them in the appropriate inputs.
--Proceed with the steps outlined in creating a clip.
-
-!!!note remember that all the settings need to be the same in order for this to work.
-
-###Turnaround Pose Exercise
-I though I'd put together an exercise for your own experimentation to better learn the effects of the prompt interpolation as well as recreating an animation with one .PNG description. The turnaround had the highest success rate in my experience so try it on your own subjects when you finish the exercise. You should have this exact animation (maybe at a different frame-rate) when you finish.
-
-![Hello World](https://i.imgur.com/hs0cRpP.gif)
-
-####Prompt + Settings:
-1girl, long black hair, straight hair, brown eyes, from from behind, medium shot, grey sweater :0.0 AND 1girl, long black hair, straight hair, brown eyes, from from behind, portrait, grey sweater, looking at viewer :1.0
-
-Negative prompt: lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, mutant, bad anatomy, detached arms, mutated face, ugly head, ugly hands
-
-Steps: 20, Sampler: Euler, CFG scale: 6, Seed: 3433547722, Size: 512x512, Model hash: 925997e9, Denoising strength: 0.48, Clip skip: 2, First pass size: 512x512
-
-
-->**Notice that the PNG info I pasted gives us the [prompt1: 0.0 AND prompt 2: 1.0] format**<-
-
-
-Time to "trim" the prompt!
-
-*Prompt 1* = 1girl, long black hair, straight hair, brown eyes, from from behind, medium shot, grey sweater.
-
-*Prompt 2* = 1girl, long black hair, straight hair, brown eyes, from from behind, portrait, grey sweater, looking at viewer.
-
-Follow the steps in **Creating a Clip with the info you gathered here**
-
-###Chain Clips and Loop Exercise
-
-####Chaining
-Using the last frame from the last exercise, we are going to interpolate to an expression and chain the clips together. Make sure your settings are the exact same as the first clip you processed.
-
-![Last Frame](https://i.imgur.com/suGuRAW.png)
-
-prompt:
-
-When we trim the prompt this time only keep the prompt for the last frame. In this case:
-
-1girl, long black hair, straight hair, brown eyes, from from behind, portrait, grey sweater, looking at viewer.
-
-negative prompts are the same.
-
-Copy and paste the same prompt into the script's prompt input and add whatever expression you want at the end of the prompt.
-
-Follow the workflow of **Creating a Clip** to make sure you get the result you want.
-
-I recommend making the clip 1s duration as this is just an exercise but you can do what you want and experiment.
-
-This is the result I will be going with moving forward (you can have a different end frame and it should be alright):
-
-![Clip 2](https://i.imgur.com/ZrZyEhx.gif)
-
-####Looping
-Using the same steps as the chaining for the last frame of the clip we just made. The difference is we will be putting the first clip's frame in the script's prompt.
-
-![img](https://i.imgur.com/Opw0v0j.png)       ![img](https://i.imgur.com/CUcxgT1.png)
-
-Fill the gap with as many frames as you want! (In my case a duration of 2 seconds (24 frames/ 12fps)
-
-![img](https://i.imgur.com/WglaCrk.gif)
-
-After we have our 3 clips let's stitch them together and see the result.
-
-
-https://imgur.com/G9NTULl
-
->embed didn't work so here's a link^
-
-Pretty neat, Eh?
-
-####Collaboration
-
-The chain method opens up a lot of opportunities to make cool collaborative animations together! Although everyone would have to have the exact same settings in order to seamlessly chain clips. Give it a shot with someone!
+!!! I will be continuing this section at a later date 
 
 -----
-####Img2Img Animation Techniques
 
-!!! I need some examples for a better comparison and settings showcase. I've been tinkering around all over the place. Planning on covering each feature in the script below. 
-
-The script I will be using for this section is Animator-Anon's Animator Script found here:
-https://github.com/Animator-Anon/Animator
-
-!!!info no we aren't the same person. I didn't choose my nickname.
-
-!!! Anon just updated again today and I didn't git pull yet to check it out... Actually, I was a few versions behind. I'll be returning to this section periodically and I'll try and establish connection. There is a lot to tinker around with and I have to go over the script again to see the changes.
-
-#####Animated Stills
-
-This is probably one of the easiest ways to animate. img2img  would love for anons to get cool landscapes, scenery, and portraits with tasteful movements up and running. This process also chains well with txt2Img animations but is normally reserved for the end of an animation sequence before a hard cut or sent to img2img. Image choice shouldn't matter but ideally something you've already cleaned up in post. Using Loopback is another way of doing this although I haven't really explored Loopback yet.
-
-#####Prompt interpolation
-
-Again, same idea although this script calculates the interpolation differently and I've noticed it gives a different looking result than doing txt2image. This is probably because of the different interpolation method used in the animator script.
-
-#####Chaining
-
-You can use the last image of the clip and feed it back into img2img and continue your sequence. Pretty easy to do.
-
-######Prompting
-Same idea as the txt2img Prompt interpolation but some key differences. It can achieve expressions and smaller movements at around 0.48 Denoise strength. Higher denoise gives you more options but coherency becomes pretty chaotic. Low denoise options (less than 25) have better coherency but severely limits pose. Avoiding the token reset helps with coherency between frames just like the txt2img method.
-
-!!! Honestly take what I say here with a grain of salt. It may be a while before I understand what's going on under the hood and find some neat tricks for your productions. these methods should still work. Thanks for being patient!
-
-#####In-Paint frame-by-frame (*haven't attempted yet*)
-
-Extremely effective for coherency from examples I've but seems really time consuming. The Krita and Photoshop plugins would alleviate a lot of the pain from inpainting in the webui and frame interpolation will cut down on the number of frames you actually need. There is an anon floating around that really has this technique under lock but I haven't seen them in a while. Would love to talk shop and give this technique an attempt so I can share with everyone. If that anon is reading this please hmu! I would love to use one of your animations as an example for what's possible!
-
-!!!note I will be continuing this section at a later date 
-
------
-##ChaiNNer
-
-link: https://github.com/chaiNNer-org/chaiNNer
-
-Really cool and free video editing software and can overlay/animate vector art over the video. You can make your own vector art in the webui using this script: https://github.com/GeorgLegato/Txt2Vectorgraphics and animate scale and position. Some creative anons might be able to make something stylish with this!
-
------
 ##Seed Travel
+
+Some anons had some luck getting coherent animations but requires a lot of "seed fishing". My experimentation only really gave me one result I kind of liked but that doesn't bring this script off the table. If you have two clips you really want to use with each other and they don't share the same seed (*and every other setting is the same* ), you can seed travel to the desired seed then fill the frames between clips. Other scripts include seed travel in their repertoire.
 
 Link: https://github.com/yownas/seed_travel
 
-Some anons had some luck getting coherent animations but requires a lot of "seed fishing". My experimentation only really gave me one result I kind of liked but that doesn't bring this script off the table. If you have two clips you really want to use with each other and they don't share the same seed (*and every other setting is the same* ), you can seed travel to the desired seed then fill the frames between clips.
+-----
+##Loopback Wave
+
+A guide for using and understanding the Loopback wave script:
+
+Link: https://rentry.org/AnimAnon-LoopbackWave
+
+->![Imgur](https://i.imgur.com/yGUEhcG.gif)<-
+
+!!!note A great primer for techniques in Deforum + Parseq.
+
+-----
+##Rotoscoping
+
+A guide to applying Automatic1111's Stable Diffusion Webui to videos with batch img2img.
+
+https://rentry.org/AnimAnon-Rotoscope
 
 -----
 
+##ChaiNNer
+
+Really cool and free video editing software and can overlay/animate vector art over the video. You can make your own vector art in the webui using this script: 
+https://github.com/GeorgLegato/Txt2Vectorgraphics 
+Some creative anons might be able to make something stylish with this!
+
+link: https://github.com/chaiNNer-org/chaiNNer
+
+-----
+
+
 ##Deforum
 
-Link: https://github.com/HelixNGC7293/DeforumStableDiffusionLocal
+!!!note Basic overview added will continue to polish and put up more examples in time. I really want to provide camera presets and masks in the future to help out the community.
 
-The most widely used animation script by far. People ask me all the time if I am using it for my animations but I think the temporal warping is a big tell. While I don't prefer how it generates frames from txt2img (introduces a temporal warping effect), it can be really useful for pulling off 3D to 2D anime and rotoscoping in general. 
+The most widely used animation script by far. People ask me all the time if I am using it for my animations but I think starting out it's better to learn with simple scripts and apply that knowledge to Deforum. Very good with Img2Img animations. This can also be really useful for pulling off 3D to 2D anime and rotoscoping in general. 
 
-Quick test video as an example:
-https://imgur.com/dq9K1mU
+Guide: https://rentry.org/AnimAnon-Deforum
 
-!!! I will be continuing this section at a later date
+Example:
+
+->![Deforum Test](https://i.imgur.com/ewduMEz.gif)<-
+
+
 -----
 
 ##Parseq
 
-Link: https://github.com/rewbs/sd-parseq
+Fantastic for plotting animation timings! Sync your animations with music using functions. What I like about this script is the GUI. timeline to track multiple interpolations with wave functions! Love that it's a separate gradio page so you aren't scrolling up and down all the time. Is currently implemented in Deforum (**Under Keyframes Tab at the very bottom**, also has a link to the web app) but I plan on covering it separately because it uses different functions (see the GitHub documentation). If you have digital music production experience, you will have an easy time picking this up. 
 
-Great script for music visualizations but can only do vid2vid or img2img. What I like about this script is the GUI timeline to track multiple interpolations even with sinusoidal functions! If this could chain txt2img I think it would be the winner for making prompt interpolations easy to visualize and track across the timeline.  
+https://rentry.org/AnimAnon-Parseq
 
-
-!!! I will be continuing this section at a later date
+Example:
+->![Imgur](https://i.imgur.com/NOSxiNs.gif)<-
 
 -----
 
 ##Flowframes
 
+Frame interpolation to save time processing extra frames to reach your target fps. Mixed results depending on the video you are trying to interpolate. Illustration styles that use thick outlines and/or fast movements tend to flicker a lot while slow, fluid movements tend to do well.
+
 Link: https://nmkd.itch.io/flowframes
 
-Frame interpolation to save time processing extra frames to reach your target fps. Mixed results but I haven't tried every model. There is a plugin somewhere to plot the interpolation on a timeline which would greatly improve results on traditional animation. Still looking....
-
 -----
+
+
 ##Moving Forward
 
-!!! I will be continuing this section at a later date
+Parseq is next as I think it is a fantastic way to animate. More Deforum updates coming as well. 
 
 
-##Unsorted Links List
+##Untested but Interesting Links List
 
+>Ebsynth Utility for A1111
+https://github.com/s9roll7/ebsynth_utility
 
-Untested but interesting:
+>VToonify: Controllable High-Resolution Portrait Video Style Transfer (HuggingFace demo available).
+https://github.com/williamyang1991/VToonify
 
-https://github.com/Animator-Anon/Animator/blob/main/animation_v6.py >From a friendly Anon
+>Latent Blending
+https://github.com/lunarring/latentblending
 
+>camera script to record movements in blender and import them into Deforum.
+https://github.com/micwalk/blender-export-diffusion
+
+>Loopback and Superimpose
 https://github.com/DiceOwl/StableDiffusionStuff
 
-https://github.com/amotile/stable-diffusion-backend/tree/master/src/process/implementations/automatic1111_scripts
-
+>An animation focused workflow frontend for Stable Diffusion
 https://github.com/amotile/stable-diffusion-studio
 
-https://github.com/jamriska/ebsynth
+>Required for the above
+https://github.com/amotile/stable-diffusion-backend/tree/master/src/process/implementations/automatic1111_scripts
+
+>Prompt Travel through latent space
+https://github.com/Kahsolt/stable-diffusion-webui-prompt-travel
+
+>High Resolution Depth Maps for Stable Diffusion WebUI
+https://github.com/thygate/stable-diffusion-webui-depthmap-script
+
+>Automate Deforum Keyframe Animations with Waveforms
+https://www.framesync.xyz/
+
+>Collaborative Neural Rendering using Anime Character Sheets 
+https://github.com/transpchan/Live3D-v2
 
 ##Contact:
 Discord: Fizzledorf#9223
 Twitter: https://twitter.com/FizzleDorf
 Youtube: https://www.youtube.com/channel/UCdkuTpXmJvHzbxnuszEiOKg
+GitHub: https://github.com/FizzleDorf/AnimationGuide

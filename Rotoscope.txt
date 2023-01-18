@@ -68,7 +68,10 @@ https://youtu.be/s03i7dPDGK8
 
 ##Ebsynth
 
-https://ebsynth.com/
+!!! note Ebsynth Extension for A1111: https://github.com/s9roll7/ebsynth_utility
+
+!!! note Ebsynth executable (needed with extension): https://ebsynth.com/
+
 
 Probably the closest to a traditional rotoscope workflow. The idea here is to key your stylized frame to the end points of every movement transition as well as keying out masks so EBsynth knows what to stylize. You can key stylized frames for every frame in the video but it's very time consuming to do all of them. You must have a mask for every frame though (I normally use aftereffects to make a mask here). I tried an experiment with this already but I need more practice keying the stylized frames, playing with de-noise values, EBsynth settings, etc. My results so far are either too blurry or too incoherent. This does yield very good results though and is a big contender for large scale productions.
 

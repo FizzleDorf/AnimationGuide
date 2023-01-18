@@ -18,11 +18,16 @@ This Page is an overview of the features and settings in the Deforum extension f
 
 The Extension has a separate tab in the Webui after you install and restart. In it, there is another set of tabs for each section of Deforum. I'll be giving a breakdown of the controls, parameters and uses.
 
+!!! note Comparison videos were created by hithereai, thanks for putting together these great examples! 
+https://github.com/deforum-art/deforum-for-automatic1111-webui/wiki/Animation-Video-Examples-Gallery
+
 !!!note I plan on adding techniques, more workflows and resources like masks and settings files.
 
-###Run
+-----
 
-->![Imgur](https://imgur.com/5GD9pzU.jpeg)<-
+##Run
+
+->![Run Tab](https://imgur.com/5GD9pzU.jpeg)<-
 
 Contains most of the settings you should be familiar with in txt2img and img2img with some additions:
 
@@ -32,7 +37,8 @@ Contains most of the settings you should be familiar with in txt2img and img2img
 Sample settings are the same as in txt2img and img2img. The notable difference in the Deforum extension is the CFG Scale and Denoise values are located in the Keyframe tab as they can be set on keyframes. See the Keyframes section for syntax and Generative Settings under the Animation Mode Settings for more details.
 
 -**Batch Settings**
-->![Imgur](https://imgur.com/68Jgrzf.jpeg)<-
+
+->![Batch Settings](https://imgur.com/68Jgrzf.jpeg)<-
 
 **Batch Name**:
 
@@ -51,32 +57,39 @@ How the seed behaves over time. There are four different Settings in the Auto111
 	
 - Schedule: Changes seeds depending on what was keyframed in the Seed Schedule parameter. *see the parameter details for more info*
 
-###Keyframes
+-----
+
+##Keyframes
 
 Mostly contains parameters that can be keyframed in the animation sequence. The parameters are explained later in this guide. What is important to understand is the syntax for keyframing the parameters:
 
 ```C++
-
 /*Abstracted Example
 from frame 0 to frame 12, interpolate x to y.*/
 0:(x), 12:(y)
-/*"0: and 12: = keyframes to activate value
+```
+"0:" and "12:" = keyframes to activate value
 "(x)" and "(y)" = parameter values (pixels, CFG scale, Denoise strength, etc)
-*/
 
-//must have "()" around parameter value. Values can be math functions. See below example: 
-0:(1.02+0.02*sin(2*3.14*t/20)), 12:0:(0.5+0.02*sin(2*3.14*t/20))
+
+You must have "()" around the parameter value. 
+
+Values can be math functions. See below example: 
+```C++
 //from the default zoom function to an altered function on frame 12.
-
+0:(1.02+0.02*sin(2*3.14*t/20)), 12:(0.5+0.02*sin(2*3.14*t/20))
+```
 //The parameter values will interpolate between each other. If you want a value to be constant until a specific keyframe:
 0:(x), 6:(x), 12: (y)
 //from frame 0 to 6, maintain the same value. From frame 6 to 12, interpolate the values.
-```
+
 *See Animation Settings for more details on individual parameters*
 
 !!! Keyframing Prompts uses a different syntax. You can see the prompt example later in the guide for comparison. Know the difference and it could save you a headache!
 
-####Animation Settings
+-----
+
+###Animation Settings
 
 ->![Imgur](https://imgur.com/kuKk8rR.jpeg)<-
 
@@ -97,42 +110,51 @@ A dropdown selection of border behaviors for outpainting. There are 2 different 
 
 - Animations with fast canvas transformations may show repeating or stretched lines (See zoom examples).
 
-####Motion Parameters (*Details in Animation Mode*)
+-----
+
+###Motion Parameters (*Details in Animation Mode*)
 
 Contains parameters to move the canvas in 2D and 3D animation modes. *More detains in the Animation Mode Section*
 
-###Prompts
+-----
+
+##Prompts
 
 ->![Imgur](https://imgur.com/X5cLcGo.jpeg)<-
 
 This is where prompts are keyframed in the animation sequence. The syntax is as follows:
 
 ```C++
-
 //Abstracted Example
 {
     "0": "Prompt A --neg NegPompt"
     "12": "Prompt B" 
-}/*where "0": and "12": = keyframes where prompt is resolved in interpolation.
+}
+```
+where "0": and "12": = keyframes where prompt is resolved in interpolation.
 Prompt A and B are positive prompts and NegPrompt is a negative prompt.
 Positive prompts are written first
 The negative prompt is read after --neg
-The quotations must be surrounding the keyframe num and another set around the full prompt with the negative.*/
+The quotations must be surrounding the keyframe num and another set around the full prompt with the negative.
 
+!!! Be sure to have { } outside the array of keyframes.
+
+```C++
 //Default example, notice the function syntax ' ' inside ( ) of the first prompt
 {
     "0": "(scenic countryside:1.0), (cherry:`where(cos(6.28*t/10)>0, 1.8*cos(6.28*t/10), 0.001)`), (strawberry:`where(cos(6.28*t/10)<0, -1.8*cos(6.28*t/10), 0.001)`), snow, detailed painting by greg rutkowski --neg (cherry:`where(cos(6.28*t/10)<0, -1.8*cos(6.28*t/10), 0.001)`), (strawberry:`where(cos(6.28*t/10)>0, 1.8*cos(6.28*t/10), 0.001)`)",
     "60": "a beautiful (((banana))), trending on Artstation",
     "80": "a beautiful coconut --neg photo, realistic",
     "100": "a beautiful durian, trending on Artstation"
-//This is keyframed as a 100 frame animation but depending on the settings can be longer.
 }
-//Be sure to have {} outside the keyframes 
 ```
+This is keyframed as a 100 frame animation but can go longer off the last prompt.
 
-###Init
+-----
 
-####Init Settings
+##Init
+
+###Init Settings
 
 Settings for initializing the animation from an image as well as mask settings. Pretty straight forward for setting up as it is very similar to img2img settings. The input image and mask can be set from a URL as seen in the default values. 
 
@@ -147,11 +169,11 @@ A toggle that sets the initial denoise strength to 0 if there isn't a reference 
 
 **strength**
 
-The initial denoise on the input image.
+The initial diffusion on the input image.
 
 **init_image**
 
-Path to the input image. This can also be a URL as seen by the example!
+Path to the input image. *This can also be a URL as seen by the example!*
 
 **Video Input**
 
@@ -179,9 +201,9 @@ Adjusts the brightness of the mask with 1 being no adjustment.
 
 !!! The rest of the mask settings behave just like img2img.
 
+-----
 
-
-####Video Input
+###Video Input
 
 **video_init_path**
 Path to the video you want to diffuse. *Can't use a URL like init_image*
@@ -195,11 +217,15 @@ Toggle to use a video mask. You will probably need to generate your own mask. Yo
 **extract_nth_frame**
 Skips frames in the input video to provide an image to diffuse upon. For example: A value of 1 will Diffuse every frame. 2 will skip every other frame.
 
-###Video Output
+-----
+
+##Video Output
 
 **image_path** 
 Path to the directory that holds the video frames. (.png)
 The output settings for frames and videos (.gif or .mp4 only)
+
+-----
 
 ##Animation Modes:
 
@@ -208,6 +234,8 @@ A drop-down of the available animation modes. There are four different types to 
 Before Moving on, It's important to understand how the x,y,z axis are used in film. the X-axis is horizontal, Y-axis is vertical, and the Z-axis is depth (distance from the camera to the canvas).
 
 ->![XYZ](https://imgur.com/s8zBnqr.jpeg)<-
+
+-----
 
 ###Generation settings:
 
@@ -221,6 +249,8 @@ Sample settings that can be keyframed are in this section. This includes: noise,
 **Noise Schedule**
 The amount of graininess that is added to the image for more diffusion diversity. 
 
+Comparison Example: 
+https://www.youtube.com/watch?v=2CBFG3xf1_A
 
 **Strength Schedule**
 Denoise strength of the img2img process. Low values adhere more closely to the input image while higher values are more "creative".
@@ -241,6 +271,7 @@ Example:
 "cfg_scale_schedule": "0: (1), 12: (12)",
 ->![CFG Scale](https://imgur.com/XBUQHu4.gif)<-
 
+-----
 
 ###Interpolation Mode
 
@@ -249,7 +280,7 @@ https://rentry.org/AnimAnon-PromptInterp
 
 In this section I will be going over carrying over techniques from my guide on prompt interpolation. I recommend reading through that first before continuing through this section to get the most out of it. 
 
-####Setup
+==**>>>>>Setup<<<<<**==
 
 In order for things to work properly a few settings need to be changed (Assuming you are starting with default Deforum settings):
 
@@ -261,15 +292,41 @@ In order for things to work properly a few settings need to be changed (Assuming
 
 !!! The base interpolation in this mode is not working properly but I have found a fix that helps smooth out the interpolations and provide the necessary frames for chaining and looping. It's not perfect but it gets decent results.
 
+
+```C++
+//Abstracted Example:
+"0": "Prompt A: `1-t/(x)` AND Prompt B: `t/(x)`  --neg NegPrompt"
 ```
+`Where t = the current keyframe`
+`x = the difference between keyframes.`
+Prompt A: `1-t/(x)` starts with a weight of 1 and interpolates to 0.
+Prompt B: `t/(x)` starts with a weight of 0 and interpolates to 1.
+
+This is creating our own prompt interpolation as a sort of override. 
+
+Example:
+
+->![Interpolation example](https://i.imgur.com/VCDkMJr.gif)<-
+
+Chaining and Looping Interpolation Clips *Placeholder fix*:
+
+```C++
 "prompts": {
-        "0": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0): `1-(t-0)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-0)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
-        "10": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `1-(t-10)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.1): `(t-10)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
-        "20": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.2): `1-(t-20)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `(t-20)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
-        "30": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `1-(t-30)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-30)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
-        "40": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2):`1-(t-40)/(100/10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0):`(t-40)/(100/10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor"
+        "0": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0): `1-(t-0)/(10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-0)/(10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "10": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `1-(t-10)/(10` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.1): `(t-10)/(10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "20": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.2): `1-(t-20)/(10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `(t-20)/(10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "30": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.8): `1-(t-30)/(10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2): `(t-30)/(10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor",
+        "40": "Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.2):`1-(t-40)/(10)` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0):`(t-40)/(10)`  --neg lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, monocolor"
     }
 ```
+
+
+>This is the prompt for Parseq. You can't keyframe inside Parseq
+```C++
+Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (smiling:0.0): `1-t/12` AND Masterpiece, best quality, 1girl, long grey hair, swept bangs, grey eyes, sketch, traditional art, (laughing:1.2): `t/12'
+```
+*make sure the seed is constant in Parseq when you use the above fix!*
+
 ->**Raw result:**<-
 ->![Raw example](https://imgur.com/tsXrcui.gif)<-
 
@@ -278,7 +335,7 @@ In order for things to work properly a few settings need to be changed (Assuming
 
 !!! unless interpolation mode gets fixed or I find a way to have the negative prompt stay constant the key poses will look different enough to not fit in the sequence. Looping requires quite a few frames to get deleted.
 
-####Storyboard
+==**>>>>>Storyboard<<<<<**==
 
 Instead of using an X/Y grid, you can use the animation prompts to storyboard your sequence. I would recommend using the webui images browser extension for quick access to the storyboard sequence to check your key poses or transitions. You can find the extension here if you don't already have it: https://github.com/yfszzx/stable-diffusion-webui-images-browser
 
@@ -298,27 +355,33 @@ Using the image browser, review the storyboard to see if any prompts need changi
 
 !!! if you are using a seed schedule, make sure you set your seeds to the corresponding keyframes in the prompt.
 
+-----
 
 ###2D and 3D:
 
-Shared parameters in 2D and 3D animation modes.
-
-####Motion Parameters
-
 ->![2D and 3D](https://imgur.com/bqKWgHT.jpeg)<-
 
+Shared parameters in 2D and 3D animation modes.
+
+->==**>>>>>Motion Parameters<<<<<**==<-
+
+
 **Angle**
-2D operator for rotating the canvas along the z axis. Positive values rotate the canvas clockwise. Negative values rotate it counter-clockwise (*see example below*)
+2D parameter for rotating the canvas along the z axis. Positive values rotate the canvas clockwise. Negative values rotate it counter-clockwise (*see example below*)
 
 Example:
 2DMode
 Border: wrap
-"angle": "0:(10)"
+angle: 0:(10)
+
+Example:
 ->![angle](https://imgur.com/dazovjY.gif)<-
 
+Comparison Example:
+https://www.youtube.com/watch?v=saVN3AkjAwQ
 
 **Zoom**
-2D operator for scaling the canvas for a zoom in or out effect. Use positive values to zoom in, decimal values to zoom out. Negatives do not work.
+2D parameter for scaling the canvas for a zoom in or out effect. Use positive values to zoom in, decimal values to zoom out. Negatives do not work.
 
 Example 1:
 2D mode
@@ -326,13 +389,16 @@ Border: Replicate
 zoom: 0:(0.985)
 ->![Imgur](https://imgur.com/peQJO6R.gif)<-
 
+Comparison Example:
+https://www.youtube.com/shorts/C2aLUpADajw
+
 Example 2:
 2D mode
 Border: Wrap
 "zoom": "0:(0.985)"
 ->![Imgur](https://imgur.com/3xDkTWv.gif)<-
 
-->*notice the lines being generated while zooming out in wrap mode*<-
+!!! notice the lines being generated while zooming out in wrap mode.
 
 
 **Translation X**
@@ -341,21 +407,27 @@ A Panning effect that translates the canvas along the x-axis.
 Example:
 2D Mode
 Border: wrap
-"translation_x": "0:(-10),11:(-10),12:(15)",
+translation_x: 0:(-10),11:(-10),12:(15),
 ->![Translation X](https://imgur.com/mBrAsQv.gif)<-
 
+Comparison Example:
+https://www.youtube.com/watch?v=XUExPFZYsig
 
 **Translation Y**
 A Panning effect that translates the canvas along the y-axis.
 
 example:
-"translation_y": "0:(-5),6:(-2),12:(5)"
+translation_y: 0:(-5),6:(-2),12:(5)
 ->![Imgur](https://imgur.com/W9RiVsf.gif)<-
 
+Comparison Example:
+https://www.youtube.com/watch?v=WmvZfd5D030
+
+-----
 
 ###2D:
 
-####Motion Parameters
+->==**>>>>>Motion Parameters<<<<<**==<-
 
 2D canvas transformations. These parameters only work in 2D mode and are meant to simulate 3D canvas rotations and movements. This is mainly for low vram machines that can't generate 3D animations efficiently.  
 
@@ -363,20 +435,62 @@ example:
 
 ->![Prespective flip](https://imgur.com/IhPsXZZ.jpeg)<-
 
-!!! I will return to this section in a while. Apologies to the low vram users.
+Simulates 3D movement in 2D mode but instead of a camera movement it appears as the canvas making 3D rotations and depth.
 
+**perspective_flip_theta**
+
+The roll effect of the canvas.
+
+Example:
+perspective_flip_theta: 0:(0), 12:(12), 24:(0)
+->![Imgur](https://i.imgur.com/YvzjNEH.gif)<-
+
+Comparison Example:
+https://youtu.be/mYrIRYRHe1I
+
+**perspective_flip_phi**
+
+The tilt effect angle along the x-axis.
+
+Example:
+perspective_flip_phi: "0:(t%15)
+->![Imgur](https://i.imgur.com/UmAafvO.gif)<-
+
+Comparison Example:
+https://www.youtube.com/watch?v=KSrlTxFPevg
+
+**perspective_flip_gamma**
+
+Pan effect angle along y-axis.
+
+Example:
+perspective_flip_gamma: 0:(0),12:(5),24:(0)
+->![Imgur](https://i.imgur.com/XKhwTSL.gif)<-
+
+Comparison Example:
+https://www.youtube.com/watch?v=DKr-yYa-osY
+
+**perspective_flip_fv**
+
+2D vanishing point of perspective. I normally leave this at a recommended setting.
+
+Example:
+perspective_flip_fv: 0:(53), 12:(100),24:(53)
+->![Imgur](https://i.imgur.com/MvxxRvk.gif)<-
+
+-----
 
 ###3D:
 
 3D canvas transformations. These parameters only work in 3D mode.
 
-####Motion Parameters
+->==**>>>>>Motion Parameters<<<<<**==<-
 
 ->![Motion Param](https://imgur.com/YhNSU2S.jpeg)<-
 
 
 **Translation Z**
-3D operator to move canvas towards/away from view (speed set by FOV)
+3D parameter to move canvas towards/away from view (speed set by FOV)
 
 example:
 "translation_z": "0:(5), 12:(-6)"
@@ -384,32 +498,42 @@ example:
 
 
 **Rotation 3D X**
-3D operator to tilt canvas up/down in degrees per frame
+3D parameter to tilt canvas up/down in degrees per frame
 
 Example:
 "rotation_3d_x": "0:(0.5)"
 ->![rotation 3d x](https://imgur.com/TcNX6wI.gif)<-
 
+Comparison Example:
+https://youtu.be/pQaF1mSB4s4
 
 **Rotation 3D Y**
-3D operator to pan canvas left/right in degrees per frame
+3D parameter to pan canvas left/right in degrees per frame.
 
 Example:
 "rotation_3d_y": "0:(0.5)"
 ->![Imgur](https://imgur.com/sHAL3m4.gif)<-
 
+Comparison Example:
+https://www.youtube.com/watch?v=nuwevWrYKDk
 
 **Rotation 3D Z**
-3D operator to roll canvas clockwise/anticlockwise
+3D parameter to roll canvas clockwise/anticlockwise
 
 Example:
-"rotation_3d_z": "0:(0.5)"
+rotation_3d_z: 0:(0.5)
 ->![Rotation 3D Z](https://imgur.com/0ZlL8AQ.gif)<-
 
-####3D Fov settings
+Comparison example:
+https://www.youtube.com/watch?v=1FZSHVlZ6So
+
+->==**>>>>>3D Fov settings<<<<<**==<-
 
 **fov_schedule**
 The scale of depth between -180 to 180 when using the Translation_Z control. Values closer to 180 will make the image have less depth and vice versa with -180.
+
+Comparison Example:
+https://www.youtube.com/watch?v=0Dr1tguOJ68
 
 **near_schedule**
 FOV of the camera plane.
@@ -417,12 +541,33 @@ FOV of the camera plane.
 **far_schedule**
 FOV of the Canvas plane.
 
+-----
 
-##Seed Schedule and Color Coherence
+###Anti blur settings
+
+->![Imgur](https://i.imgur.com/9iyg6zG.jpg)<-
+
+!!! This feature is relatively new and requires some more experimentation so I'll return to this. Feel free to experiment with the settings though.
+
+>==**>>>>>####Anti-Blur *sigma_schedule*<<<<<**==<-
+
+Comparison Example:
+https://www.youtube.com/watch?v=mjrz85hPvlY
+
+->==**>>>>>####Anti-Blur *amount_schedule*<<<<<**==<-
+
+Comparison Example:
+
+[Static cam]https://www.youtube.com/watch?v=qg5ZG--hP4Y
+[Zoom in]https://youtu.be/_lzIKlfY-88
+
+-----
+
+###Seed Schedule and Color Coherence
 
 ->![Seed and Coherence](https://imgur.com/icEEfhl.jpeg)<-
 
-####Seed Schedule
+->==**>>>>>####Seed Schedule<<<<<**==<-
 
 This setting only comes into effect when the **seed_behavior** setting in the **Run** section is set to **Schedule**. This parameter can keyframe seeds and interpolates between them over time.
 
@@ -432,32 +577,79 @@ example:
 
 !!! Notice the bloom effect when the seed stays constant after frame 12.
 
-###Color Coherence
+->==**>>>>>####Color Coherence<<<<<**==<-
 
 Contains 3 different CC options: LAB, HSV, RGB as well as the option to turn it off.
+
 - LAB: Perceptual Lightness* A * B axis color balance (search “cielab”)
 - HSV: Hue Saturation & Value color balance.
 - RGB: Red Green & Blue color balance.
 
-###Handy Resources
+->==**>>>>>####Diffusion Cadence<<<<<**==<-
 
-Main GitHub site:
+How many frames to be skipped before Diffusion while still applying camera/canvas transformations. A setting of 1 is default (diffuse every frame), 2 is skip every 2nd frame diffusion, etc. Video input and Interpolation modes are unaffected by this parameter.
+
+Comparison Example:
+https://youtu.be/R-LXIufuGmk
+
+-----
+
+###Noise Settings:
+
+->![Imgur](https://i.imgur.com/g4XP8on.jpg)<-
+
+You can select and edit the behavior of perilin noise using the settings here.
+
+->==**>>>>>Noise type<<<<<**==<-
+select which type of noise you would like to use. Settings below can only be used by perlin noise (reccomended).
+
+->==**>>>>>perlin w/h<<<<<**==<-
+lower values = larger noise regions for both settings.
+
+->==**>>>>>perlin octaves<<<<<**==<-
+The number of perlin noise octaves. Higher falues are smooth and smoke-like while higher values make it more organic and spotty.
+
+->==**>>>>>perlin persistance<<<<<**==<-
+How much noise from each octave is added to each iteration. Higher values are straighter and sharper, lower is rounder and smoother.
+
+Comparison Example:
+https://www.youtube.com/watch?v=O69WRHjhpYY
+
+-----
+##Hybrid Video Mode
+
+->![Imgur](https://i.imgur.com/sTvRI5m.jpg)<-
+
+Video mix settings for 2D and 3D modes using compositing methods and masking.
+
+https://docs.google.com/document/d/1I9zJfmmJd9l6aEdPa_JZBbciOw-6r2CsWcesGLbCb-8/edit
+
+-----
+
+##Handy Resources
+
+>Main GitHub site:
 https://deforum.github.io/
 
-Supported functions in Deforum keyframe parameters:
+>Supported functions in Deforum keyframe parameters:
 https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/user_guide.html#supported-functions
 
-Math Use Guide in Deforum:
+>Math Use Guide in Deforum:
 https://docs.google.com/document/d/1pfW1PwbDIuW0cv-dnuyYj1UzPqe23BlSLTJsqazffXM/edit
 
-Graphing Calculator:
+>Graphing Calculator:
 https://www.desmos.com/calculator
 
-Keyframe editor for manually creating curves for keyframe parameters:
+>Keyframe editors for manually creating curves for keyframe parameters:
+
 https://www.chigozie.co.uk/keyframe-string-generator/
 
-Quick reference for camera controls:
+https://framesync2-alpha.vercel.app/
+
+>Quick reference for camera controls:
 https://deforum.github.io/animation.html
+
+
 
 return to main page:
 https://rentry.org/AnimAnon
